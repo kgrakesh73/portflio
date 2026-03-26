@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Portfolio</title>
+
+    <!-- ✅ Link CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <a href="#home">Home</a> |
+        <a href="#about">About</a> |
+        <a href="#projects">Projects</a> |
+        <a href="#contact">Contact</a>
+    </div>
+
+    <hr>
+
+    <!-- Home Section -->
+    <div id="home" class="section">
+        <h1>Welcome to My Portfolio</h1>
+        <p>Hello! I am a BCA student learning web development.</p>
+    </div>
+
+    <hr>
+
+    <!-- About Section -->
+    <div id="about" class="section">
+        <h2>About Me</h2>
+        <p>I am interested in web development using HTML, JavaScript, Node.js, and MySQL.</p>
+    </div>
+
+    <hr>
+
+    <!-- Projects Section -->
+    <div id="projects" class="section">
+        <h2>My Projects</h2>
+
+        <h3>Project 1</h3>
+        <p>Portfolio Website</p>
+
+        <h3>Project 2</h3>
+        <p>CRUD Application using Node.js and MySQL</p>
+    </div>
+
+    <hr>
+
+    <!-- Contact Section -->
+    <div id="contact" class="section">
+        <h2>Contact Me</h2>
+        
+        <!-- ✅ Added ID -->
+        <form id="contactForm">
+            <label>Name:</label><br>
+            <input type="text" name="name" required><br><br>
+
+            <label>Email:</label><br>
+            <input type="email" name="email" required><br><br>
+
+            <label>Message:</label><br>
+            <textarea name="message" required></textarea><br><br>
+
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <!-- ✅ Link JS -->
+    <script src="script.js"></script>
+
+</body>
+</html>
