@@ -1,57 +1,81 @@
-// Smooth scrolling for navbar links
+// 1. Smooth scrolling for navbar links
 document.querySelectorAll('.navbar a').forEach(link => {
     link.addEventListener('click', function(e) {
-        e.preventDefault();
-
         const targetId = this.getAttribute('href');
-        const targetSection = document.querySelector(targetId);
-
-        targetSection.scrollIntoView({
-            behavior: 'smooth'
-        });
+        
+        // Only trigger for internal anchor links (starting with #)
+        if (targetId.startsWith('#')) {
+            e.preventDefault();
+            const targetSection = document.querySelector(targetId);
+            
+            if (targetSection) {
+                targetSection.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        }
     });
 });
 
+// 2. ✅ Configuration: Backend URL Logic
+// This automatically switches between your local machine and your Render server.
+const BASE_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+    ? "http://localhost:3000" 
+    : "https://your-backend-service-name.onrender.com"; // <-- REPLACE with your actual Render URL later
 
-// Form submission → send data to Node.js backend
-const form = document.getElementById("contactForm");
+// 3. Form Submission Handling
+const contactForm = document.getElementById("contactForm");
 
-form.addEventListener("submit", async function(e) {
-    e.preventDefault();
+if (contactForm) {
+    contactForm.addEventListener("submit", async function(e) {
+        e.preventDefault();
 
-    const name = document.querySelector('input[name="name"]').value.trim();
-    const email = document.querySelector('input[name="email"]').value.trim();
-    const message = document.querySelector('textarea[name="message"]').value.trim();
+        // Extract values from the form
+        const name = contactForm.querySelector('input[name="name"]').value.trim();
+        const email = contactForm.querySelector('input[name="email"]').value.trim();
+        const message = contactForm.querySelector('textarea[name="message"]').value.trim();
 
-    // Validation
-    if (name === "" || email === "" || message === "") {
-        alert("All fields are required!");
-        return;
-    }
+        // Client-side Validation
+        if (!name || !email || !message) {
+            alert("Please fill in all fields before sending.");
+            return;
+        }
 
-    if (!email.includes("@")) {
-        alert("Enter a valid email!");
-        return;
-    }
+        // Visual Feedback: Disable button and change text while "Loading"
+        const submitBtn = contactForm.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerText;
+        
+        submitBtn.disabled = true;
+        submitBtn.innerText = "Sending...";
 
-    try {
-        // ✅ Send data to backend
-        const response = await fetch("http://localhost:3000/contact", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ name, email, message })
-        });
+        try {
+            // ✅ Send data to Node.js backend
+            const response = await fetch(`${BASE_URL}/contact`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ name, email, message })
+            });
 
-        const data = await response.json();
+            const data = await response.json();
 
-        alert(data.message); // "Form submitted successfully!"
+            if (response.ok) {
+                alert(data.message || "Success! Your message has been sent. ✅");
+                contactForm.reset(); // Clear form fields
+            } else {
+                // Handle server-side errors (e.g., Database connection failed)
+                throw new Error(data.error || "Server rejected the request.");
+            }
 
-        form.reset();
-
-    } catch (error) {
-        console.error("Error:", error);
-        alert("Error connecting to server!");
-    }
-});
+        } catch (error) {
+            console.error("Fetch Error:", error);
+            alert("❌ Connection Error: Unable to reach the server. Make sure your Render backend is 'Active'.");
+        } finally {
+            // Restore button state
+            submitBtn.disabled = false;
+            submitBtn.innerText = originalText;
+        }
+    });
+}

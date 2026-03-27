@@ -1,99 +1,71 @@
-// Load environment variables
-require('dotenv').config();
-
 const express = require('express');
 const cors = require('cors');
 const mysql = require('mysql2');
+require('dotenv').config();
 
 const app = express();
-const PORT = 3000;
 
-// Middleware
-app.use(cors());
-app.use(express.json());
+// 1. ✅ Middleware
+// Allows your frontend to talk to this backend
+app.use(cors({
+    origin: "*" // In production, you can replace "*" with your Render frontend URL
+}));
 
-// MySQL Connection (Railway)
-const db = mysql.createConnection({
+app.use(express.json()); // Parses incoming JSON data
+
+// 2. ✅ Database Configuration (using a Pool for stability)
+const db = mysql.createPool({
     host: process.env.MYSQLHOST,
     user: process.env.MYSQLUSER,
     password: process.env.MYSQLPASSWORD,
     database: process.env.MYSQLDATABASE,
-    port: process.env.MYSQLPORT
+    port: Number(process.env.MYSQLPORT),
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
 });
 
-// Connect to DB
-db.connect(err => {
+// Test the database connection on startup
+db.getConnection((err, connection) => {
     if (err) {
-        console.error("❌ Database connection failed:", err);
+        console.error("❌ Database Connection Failed:", err.message);
     } else {
-        console.log("✅ Connected to MySQL (Railway)");
+        console.log("✅ Successfully connected to Railway MySQL Pool");
+        connection.release(); // Return the connection to the pool
     }
 });
 
-// Test route
+// 3. ✅ API Routes
+
+// Health check route (helps Render monitor your app)
 app.get('/', (req, res) => {
-    res.send("🚀 Server is running...");
+    res.send("Backend Server is Live! 🚀");
 });
 
-// Contact form API (CREATE)
+// POST Route: Save contact form data
 app.post('/contact', (req, res) => {
     const { name, email, message } = req.body;
 
-    // Validation
+    // Simple Server-side Validation
     if (!name || !email || !message) {
-        return res.status(400).json({ message: "All fields are required!" });
+        return res.status(400).json({ error: "Missing required fields" });
     }
 
     const sql = "INSERT INTO contacts (name, email, message) VALUES (?, ?, ?)";
 
     db.query(sql, [name, email, message], (err, result) => {
         if (err) {
-            console.error("❌ Error inserting data:", err);
-            return res.status(500).json({ message: "Database error" });
+            console.error("❌ Database Insert Error:", err);
+            return res.status(500).json({ error: "Failed to save message to database" });
         }
-
-        console.log("📩 Data saved to database");
-
-        res.json({ message: "Form submitted and saved to database!" });
+        
+        console.log("Data inserted successfully:", result.insertId);
+        res.status(200).json({ message: "Message sent successfully! ✅" });
     });
 });
 
-// READ (Get all messages)
-app.get('/messages', (req, res) => {
-    const sql = "SELECT * FROM contacts ORDER BY id DESC";
-
-    db.query(sql, (err, results) => {
-        if (err) {
-            console.error("❌ Error fetching data:", err);
-            return res.status(500).json({ message: "Database error" });
-        }
-
-        res.json(results);
-    });
-});
-
-// DELETE (optional CRUD)
-app.delete('/message/:id', (req, res) => {
-    const { id } = req.params;
-
-    const sql = "DELETE FROM contacts WHERE id = ?";
-
-    db.query(sql, [id], (err, result) => {
-        if (err) {
-            console.error("❌ Error deleting data:", err);
-            return res.status(500).json({ message: "Database error" });
-        }
-
-        res.json({ message: "Message deleted successfully!" });
-    });
-});
-
-// 404 handler
-app.use((req, res) => {
-    res.status(404).json({ message: "Route not found" });
-});
-
-// Start server
+// 4. ✅ Start Server
+const PORT = process.env.PORT || 3000; // Render will provide the PORT automatically
 app.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
+    console.log(`Server is running on port ${PORT}`);
 });

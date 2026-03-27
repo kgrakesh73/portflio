@@ -3,74 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Portfolio</title>
-
-    <!-- ✅ Link CSS -->
+    <title>My BCA Project | Portfolio</title>
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-    <!-- Navigation Bar -->
-    <div class="navbar">
-        <a href="#home">Home</a> |
-        <a href="#about">About</a> |
-        <a href="#projects">Projects</a> |
+    <nav class="navbar">
+        <a href="#home">Home</a>
+        <a href="#projects">Projects</a>
         <a href="#contact">Contact</a>
-    </div>
+    </nav>
+
+    <section id="home" class="section">
+        <h1>Welcome to My Project</h1>
+        <p>Hi, I'm a 1st year BCA student. This is my first full-stack web application deployed using Render and Railway.</p>
+    </section>
 
     <hr>
 
-    <!-- Home Section -->
-    <div id="home" class="section">
-        <h1>Welcome to My Portfolio</h1>
-        <p>Hello! I am a BCA student learning web development.</p>
-    </div>
-
-    <hr>
-
-    <!-- About Section -->
-    <div id="about" class="section">
-        <h2>About Me</h2>
-        <p>I am interested in web development using HTML, JavaScript, Node.js, and MySQL.</p>
-    </div>
-
-    <hr>
-
-    <!-- Projects Section -->
-    <div id="projects" class="section">
+    <section id="projects" class="section">
         <h2>My Projects</h2>
-
-        <h3>Project 1</h3>
-        <p>Portfolio Website</p>
-
-        <h3>Project 2</h3>
-        <p>CRUD Application using Node.js and MySQL</p>
-    </div>
+        <div class="project-list">
+            <h3>Project 1: Student Management</h3>
+            <p>A simple CRUD application built with Node.js.</p>
+            
+            <h3>Project 2: Portfolio Website</h3>
+            <p>The very site you are looking at right now!</p>
+        </div>
+    </section>
 
     <hr>
 
-    <!-- Contact Section -->
-    <div id="contact" class="section">
+    <section id="contact" class="section">
         <h2>Contact Me</h2>
+        <p>Have a question? Send me a message below.</p>
         
-        <!-- ✅ Added ID -->
         <form id="contactForm">
-            <label>Name:</label><br>
-            <input type="text" name="name" required><br><br>
-
-            <label>Email:</label><br>
-            <input type="email" name="email" required><br><br>
-
-            <label>Message:</label><br>
-            <textarea name="message" required></textarea><br><br>
-
-            <button type="submit">Submit</button>
+            <input type="text" name="name" placeholder="Your Name" required>
+            <input type="email" name="email" placeholder="Your Email" required>
+            <textarea name="message" rows="5" placeholder="Your Message" required></textarea>
+            <button type="submit">Send Message</button>
         </form>
-    </div>
+    </section>
 
-    <!-- ✅ Link JS -->
     <script src="script.js"></script>
-
 </body>
 </html>
